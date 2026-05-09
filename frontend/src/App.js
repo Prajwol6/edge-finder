@@ -99,7 +99,7 @@ function Home() {
     formData.append("jobDescription", jd);
 
     try {
-      const res = await fetch("/api/analyze", {
+      const res = await fetch("https://edge-finder-ysme.onrender.com/api/analyze", {
         method: "POST",
         body: formData,
       });

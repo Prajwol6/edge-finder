@@ -12,7 +12,12 @@ app.set("trust proxy", 1);
 // Middleware
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://your-production-domain.com"],
+    origin: [
+      "http://localhost:3000",
+      "https://edge-finder-ysme.onrender.com",
+      "https://edge-finder.vercel.app",
+      "https://edge-finder-eta.vercel.app",
+    ],
   })
 );
 app.use(express.json());

@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import "./App.css";
+import Terms from "./Terms";
+import Privacy from "./Privacy";
 
 const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes
 const ACCEPTED_TYPES = [
@@ -8,6 +10,33 @@ const ACCEPTED_TYPES = [
 ];
 
 export default function App() {
+  const [route, setRoute] = useState(window.location.hash);
+
+  useEffect(() => {
+    const onHashChange = () => setRoute(window.location.hash);
+    window.addEventListener("hashchange", onHashChange);
+    return () => window.removeEventListener("hashchange", onHashChange);
+  }, []);
+
+  if (route === "#/terms") return <PageWithFooter><Terms /></PageWithFooter>;
+  if (route === "#/privacy") return <PageWithFooter><Privacy /></PageWithFooter>;
+  return <PageWithFooter><Home /></PageWithFooter>;
+}
+
+function PageWithFooter({ children }) {
+  return (
+    <>
+      {children}
+      <footer className="site-footer">
+        <a href="#/terms">Terms</a>
+        <span className="footer-sep">·</span>
+        <a href="#/privacy">Privacy</a>
+      </footer>
+    </>
+  );
+}
+
+function Home() {
   const [file, setFile] = useState(null);
   const [jd, setJd] = useState("");
   const [result, setResult] = useState(null);
@@ -236,6 +265,11 @@ export default function App() {
           <button className="reset-btn" onClick={handleReset}>
             Analyze Another Resume
           </button>
+
+          <p className="ai-disclaimer">
+            Results are AI-generated suggestions. Verify before using. We are not
+            responsible for hiring outcomes.
+          </p>
         </div>
       )}
     </div>

@@ -42,7 +42,30 @@ router.post("/", upload.single("resume"), async (req, res) => {
       mimetype: req.file.mimetype,
       buffer: req.file.buffer,
     });
- 
+
+    const resumeKeywords = [
+      "experience",
+      "education",
+      "skills",
+      "work",
+      "university",
+      "college",
+      "degree",
+      "intern",
+      "job",
+      "project",
+    ];
+    const lowerText = resumeText.toLowerCase();
+    if (
+      resumeText.trim().length < 200 ||
+      !resumeKeywords.some((kw) => lowerText.includes(kw))
+    ) {
+      return res.status(400).json({
+        error:
+          "This doesn't look like a resume. Please upload your actual resume.",
+      });
+    }
+
     const result = await analyzeResume(resumeText, jdClean);
  
     // File is already gone — it was only in memory during this request

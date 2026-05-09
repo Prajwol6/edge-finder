@@ -76,6 +76,23 @@ router.post("/", upload.single("resume"), async (req, res) => {
       buffer: req.file.buffer,
     });
 
+    const lowerText = resumeText.toLowerCase();
+    const wordCount = resumeText.trim().split(/\s+/).filter(Boolean).length;
+
+    const nonResumePhrases = [
+      "account number",
+      "bill",
+      "invoice",
+      "payment due",
+      "amount due",
+      "statement",
+      "balance",
+      "meter reading",
+    ];
+    const hasNonResumePhrase = nonResumePhrases.some((phrase) =>
+      new RegExp(`\\b${phrase}\\b`).test(lowerText)
+    );
+
     const resumeKeywords = [
       "experience",
       "education",
@@ -85,17 +102,26 @@ router.post("/", upload.single("resume"), async (req, res) => {
       "college",
       "degree",
       "intern",
-      "job",
       "project",
+      "certification",
+      "summary",
+      "objective",
+      "employment",
+      "volunteer",
+      "achievement",
     ];
-    const lowerText = resumeText.toLowerCase();
+    const resumeKeywordMatches = resumeKeywords.filter((kw) =>
+      new RegExp(`\\b${kw}\\b`).test(lowerText)
+    ).length;
+
     if (
-      resumeText.trim().length < 200 ||
-      !resumeKeywords.some((kw) => lowerText.includes(kw))
+      wordCount < 150 ||
+      resumeKeywordMatches < 2 ||
+      hasNonResumePhrase
     ) {
       return res.status(400).json({
         error:
-          "This doesn't look like a resume. Please upload your actual resume.",
+          "This doesn't look like a resume. Please upload your actual resume PDF.",
       });
     }
 

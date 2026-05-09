@@ -2,10 +2,20 @@ const mammoth = require("mammoth");
 async function parseResume(file) {
   const { mimetype, buffer } = file;
   if (mimetype === "application/pdf") {
-    const pdfParse = (await import("pdf-parse-fork")).default;
-    const data = await pdfParse(buffer);
-    const text = typeof data.text === "string" ? data.text : String(data.text);
-    return text;
+    const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
+    const doc = await pdfjs.getDocument({
+      data: new Uint8Array(buffer),
+      isEvalSupported: false,
+      useSystemFonts: true,
+    }).promise;
+    const pages = [];
+    for (let i = 1; i <= doc.numPages; i++) {
+      const page = await doc.getPage(i);
+      const content = await page.getTextContent();
+      pages.push(content.items.map((item) => item.str).join(" "));
+    }
+    await doc.destroy();
+    return pages.join("\n");
   }
   if (
     mimetype ===

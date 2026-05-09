@@ -1,27 +1,20 @@
 {
-  "name": "edge-finder-frontend",
+  "name": "edge-finder-backend",
   "version": "1.0.0",
   "private": true,
   "dependencies": {
-    "@google/generative-ai": "^0.24.1",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "express-rate-limit": "^8.5.1",
-    "groq-sdk": "^1.1.2",
     "mammoth": "^1.12.0",
     "multer": "^2.1.1",
-    "pdf-parse-fork": "^1.2.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-scripts": "5.0.1"
+    "pdf-parse-fork": "^1.2.0"
   },
   "scripts": {
     "start": "node server.js",
-    "build": "react-scripts build",
     "dev": "nodemon server.js"
   },
-  "proxy": "http://localhost:5000",
   "main": "server.js",
   "keywords": [],
   "author": "",

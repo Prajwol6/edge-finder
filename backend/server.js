@@ -10,7 +10,11 @@ const PORT = process.env.PORT || 5000;
 app.set("trust proxy", 1);
 
 // Middleware
-app.use(cors({ origin: "http://localhost:3000" }));
+app.use(
+  cors({
+    origin: ["http://localhost:3000", "https://your-production-domain.com"],
+  })
+);
 app.use(express.json());
  
 // Rate limiting — 5 requests per IP per hour

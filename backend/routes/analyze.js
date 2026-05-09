@@ -36,8 +36,7 @@ router.post("/", upload.single("resume"), async (req, res) => {
         .json({ error: "Job description is too short. Paste the full JD." });
     }
  
-    // Prompt injection guard
-    const jdClean = jobDescription.slice(0, 5000); // cap length
+    const jdClean = jobDescription.slice(0, 5000);
  
     const resumeText = await parseResume({
       mimetype: req.file.mimetype,
@@ -49,8 +48,8 @@ router.post("/", upload.single("resume"), async (req, res) => {
     // File is already gone — it was only in memory during this request
     res.json(result);
   } catch (err) {
-    console.error("Analyze error:", err.message);
-    res.status(500).json({ error: err.message || "Something went wrong." });
+    console.error("Analyze error:", err);
+    res.status(500).json({ error: "Analysis failed. Please try again." });
   }
 });
  

@@ -35,7 +35,40 @@ router.post("/", upload.single("resume"), async (req, res) => {
         .status(400)
         .json({ error: "Job description is too short. Paste the full JD." });
     }
- 
+
+    const jdKeywords = [
+      "role",
+      "responsibilities",
+      "requirements",
+      "experience",
+      "skills",
+      "team",
+      "work",
+      "job",
+      "position",
+      "qualifications",
+      "candidate",
+      "ability",
+      "knowledge",
+      "develop",
+      "manage",
+      "support",
+      "communicate",
+      "degree",
+      "years",
+      "preferred",
+    ];
+    const lowerJd = jobDescription.toLowerCase();
+    const jdMatches = jdKeywords.filter((kw) =>
+      new RegExp(`\\b${kw}\\b`).test(lowerJd)
+    ).length;
+    if (jdMatches < 3) {
+      return res.status(400).json({
+        error:
+          "This doesn't look like a real job description. Please paste the full job posting.",
+      });
+    }
+
     const jdClean = jobDescription.slice(0, 5000);
  
     const resumeText = await parseResume({

@@ -34,6 +34,22 @@ router.post("/", upload.single("resume"), async (req, res) => {
       return res.status(400).json({ error: "Resume file is required." });
     }
 
+    if (hasFile) {
+      const magic = req.file.buffer.slice(0, 4);
+      const isPdf = magic.toString("ascii") === "%PDF";
+      const isDocx = magic[0] === 0x50 && magic[1] === 0x4b;
+      const claimedPdf = req.file.mimetype === "application/pdf";
+      const claimedDocx =
+        req.file.mimetype ===
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+
+      if ((claimedPdf && !isPdf) || (claimedDocx && !isDocx)) {
+        return res.status(400).json({
+          error: "File contents don't match the declared file type.",
+        });
+      }
+    }
+
     if (!jobDescription || jobDescription.trim().length < 50) {
       return res
         .status(400)

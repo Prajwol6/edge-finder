@@ -9,6 +9,82 @@ const ACCEPTED_TYPES = [
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 ];
 
+const SAMPLE_JD = `Cybersecurity Intern — Summer 2026
+Acme Security Inc. · Remote (US)
+
+About the role
+We're looking for a cybersecurity intern to join our blue team for the summer. You'll work alongside our SOC analysts and security engineers on real production systems, helping detect, investigate, and respond to security incidents.
+
+Responsibilities
+- Triage alerts in our SIEM (Splunk) and escalate true positives
+- Write detection rules and Sigma signatures for emerging threats
+- Assist with vulnerability scans using Nessus and Qualys
+- Help author and maintain runbooks for incident response
+- Participate in tabletop exercises with the wider security team
+- Contribute to internal Python tooling for log parsing and enrichment
+
+Requirements
+- Currently pursuing a degree in Computer Science, Cybersecurity, or related field
+- Working knowledge of TCP/IP, DNS, HTTP, and common attack techniques
+- Familiarity with at least one scripting language (Python preferred)
+- Experience with Linux command line and basic networking tools (nmap, wireshark)
+- Understanding of the MITRE ATT&CK framework
+- Strong written communication; ability to document findings clearly
+
+Preferred qualifications
+- Prior CTF experience (HackTheBox, TryHackMe, picoCTF)
+- Familiarity with cloud security on AWS or GCP
+- Security+, Network+, or equivalent certification
+- Coursework or projects involving SIEM, EDR, or threat hunting
+
+What we offer
+- Paid 12-week internship with mentorship from senior security engineers
+- Potential for a full-time offer based on performance`;
+
+const SAMPLE_RESUME = `Alex Chen
+alex.chen@university.edu · linkedin.com/in/alexchen · github.com/alexchen
+San Jose, CA
+
+Education
+University of California, Davis
+B.S. Computer Science · Expected June 2027 · GPA: 3.6/4.0
+Relevant coursework: Data Structures, Operating Systems, Computer Networks, Discrete Math, Intro to Databases
+
+Skills
+Languages: Python, Java, JavaScript, C
+Tools: Git, VS Code, Docker (basic), Linux command line
+Web: HTML, CSS, React (intro), Node.js (intro)
+
+Projects
+Personal Portfolio Website
+Built a responsive portfolio site using React and Tailwind. Deployed to Vercel with a custom domain. Implemented dark mode and animated transitions.
+
+Weather Dashboard
+Created a Python Flask app that pulls forecasts from the OpenWeather API and displays a 5-day outlook. Added basic caching to reduce API calls.
+
+Lecture Notes Organizer
+Wrote a Python script that parses Markdown lecture notes and generates a searchable static HTML site. Used by a few classmates.
+
+Experience
+Computer Science Tutor — UC Davis Tutoring Center
+September 2024 – Present
+- Tutor undergraduate students in introductory programming and data structures
+- Run weekly review sessions of 6-10 students before midterms
+- Help debug student code in Python, Java, and C
+
+Sales Associate — Local Bookstore
+Summer 2023, Summer 2024
+- Operated point-of-sale system and processed customer transactions
+- Reorganized inventory tracking spreadsheet, reducing weekly stocktake time
+- Trained two new hires on register procedures and shelf layout
+
+Activities
+Member, UC Davis Cybersecurity Club (2024 – Present)
+Attended weekly meetings; participated in two introductory CTF events.
+
+Volunteer, Hour of Code at Local Middle School (2023, 2024)
+Helped students complete their first programming exercises in Scratch and Python.`;
+
 export default function App() {
   const [route, setRoute] = useState(window.location.hash);
 
@@ -38,6 +114,7 @@ function PageWithFooter({ children }) {
 
 function Home() {
   const [file, setFile] = useState(null);
+  const [sampleResume, setSampleResume] = useState(null);
   const [jd, setJd] = useState("");
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -51,6 +128,7 @@ function Home() {
     clearTimeout(timerRef.current);
     timerRef.current = setTimeout(() => {
       setFile(null);
+      setSampleResume(null);
       setJd("");
       setResult(null);
       setSessionExpired(true);
@@ -58,12 +136,12 @@ function Home() {
   };
 
   useEffect(() => {
-    if (file || jd) {
+    if (file || sampleResume || jd) {
       setSessionExpired(false);
       resetTimer();
     }
     return () => clearTimeout(timerRef.current);
-  }, [file, jd]);
+  }, [file, sampleResume, jd]);
 
   const acceptFile = (f) => {
     if (!f) return;
@@ -72,6 +150,15 @@ function Home() {
       return;
     }
     setFile(f);
+    setSampleResume(null);
+    setResult(null);
+    setError("");
+  };
+
+  const loadSample = () => {
+    setFile(null);
+    setSampleResume(SAMPLE_RESUME);
+    setJd(SAMPLE_JD);
     setResult(null);
     setError("");
   };
@@ -85,7 +172,7 @@ function Home() {
   };
 
   const handleSubmit = async () => {
-    if (!file || !jd.trim()) {
+    if ((!file && !sampleResume) || !jd.trim()) {
       setError("Upload your resume and paste the job description.");
       return;
     }
@@ -95,7 +182,11 @@ function Home() {
     setResult(null);
 
     const formData = new FormData();
-    formData.append("resume", file);
+    if (file) {
+      formData.append("resume", file);
+    } else {
+      formData.append("resumeText", sampleResume);
+    }
     formData.append("jobDescription", jd);
 
     try {
@@ -117,6 +208,7 @@ function Home() {
 
   const handleReset = () => {
     setFile(null);
+    setSampleResume(null);
     setJd("");
     setResult(null);
     setError("");
@@ -144,7 +236,7 @@ function Home() {
           <div className="field">
             <label>Upload Resume</label>
             <div
-              className={`dropzone${dragOver ? " dragging" : ""}${file ? " has-file" : ""}`}
+              className={`dropzone${dragOver ? " dragging" : ""}${file || sampleResume ? " has-file" : ""}`}
               onClick={() => fileInputRef.current?.click()}
               onDragOver={(e) => {
                 e.preventDefault();
@@ -189,6 +281,11 @@ function Home() {
                   <p className="dropzone-main">✓ {file.name}</p>
                   <p className="dropzone-sub">Click or drop to replace</p>
                 </>
+              ) : sampleResume ? (
+                <>
+                  <p className="dropzone-main">✓ Sample resume loaded</p>
+                  <p className="dropzone-sub">Click or drop to replace with your own</p>
+                </>
               ) : (
                 <>
                   <p className="dropzone-main">Drop your resume here or click to browse</p>
@@ -196,6 +293,9 @@ function Home() {
                 </>
               )}
             </div>
+            <button type="button" className="sample-btn" onClick={loadSample}>
+              Try with sample data
+            </button>
           </div>
 
           <div className="field">

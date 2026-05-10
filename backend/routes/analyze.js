@@ -24,12 +24,16 @@ const upload = multer({
  
 router.post("/", upload.single("resume"), async (req, res) => {
   try {
-    const { jobDescription } = req.body;
- 
-    if (!req.file) {
+    const { jobDescription, resumeText: rawResumeText } = req.body;
+
+    const hasFile = !!req.file;
+    const hasText =
+      typeof rawResumeText === "string" && rawResumeText.trim().length > 0;
+
+    if (!hasFile && !hasText) {
       return res.status(400).json({ error: "Resume file is required." });
     }
- 
+
     if (!jobDescription || jobDescription.trim().length < 50) {
       return res
         .status(400)
@@ -70,11 +74,13 @@ router.post("/", upload.single("resume"), async (req, res) => {
     }
 
     const jdClean = jobDescription.slice(0, 5000);
- 
-    const resumeText = await parseResume({
-      mimetype: req.file.mimetype,
-      buffer: req.file.buffer,
-    });
+
+    const resumeText = hasFile
+      ? await parseResume({
+          mimetype: req.file.mimetype,
+          buffer: req.file.buffer,
+        })
+      : rawResumeText.slice(0, 20000);
 
     const lowerText = resumeText.toLowerCase();
     const wordCount = resumeText.trim().split(/\s+/).filter(Boolean).length;
@@ -125,7 +131,12 @@ router.post("/", upload.single("resume"), async (req, res) => {
       });
     }
 
-    const result = await analyzeResume(resumeText, jdClean);
+    const sanitize = (s) =>
+      s
+        .replace(/<\/?(resume|jd)\b[^>]*>/gi, "")
+        .replace(/<[^>]*>/g, "");
+
+    const result = await analyzeResume(sanitize(resumeText), sanitize(jdClean));
  
     // File is already gone — it was only in memory during this request
     res.json(result);

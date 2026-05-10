@@ -165,6 +165,25 @@ header h1 {
   font-size: 0.85rem;
 }
 
+.sample-btn {
+  align-self: center;
+  margin-top: 8px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  padding: 6px 14px;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.76rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.sample-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 textarea {
   background: var(--surface);
   border: 1px solid var(--border);

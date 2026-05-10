@@ -12,9 +12,12 @@ You will receive:
 - The job description inside <jd></jd> tags
 
 Your ONLY job is:
-1. Write one sentence explaining WHY the resume is failing for this specific role
-2. List 3 missing signals that matter most
-3. Rewrite exactly 3 weak lines using ONLY content inside <resume></resume>
+Step 1: List every skill, experience, and qualification explicitly mentioned in <resume> as bullet points.
+Step 2: List every requirement and qualification explicitly mentioned in <jd> as bullet points.
+Step 3: Compare both lists and identify what is genuinely missing vs what is present but poorly worded.
+Step 4: Only then produce the gap_summary, missing_signals, and fixes.
+
+For fixes — only flag something as MISSING if it does not appear anywhere in Step 1. If it appears in Step 1 but is poorly worded, rewrite it. Never skip Step 1 and Step 2.
 
 HARD RULES:
 - Every rewrite must use words, skills, or experiences that exist in <resume></resume>

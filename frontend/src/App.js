@@ -100,6 +100,8 @@ export default function App() {
 }
 
 function PageWithFooter({ children }) {
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
+
   return (
     <>
       {children}
@@ -108,9 +110,110 @@ function PageWithFooter({ children }) {
         <span className="footer-sep">·</span>
         <a href="#/privacy">Privacy</a>
         <span className="footer-sep">·</span>
-        <a href="https://docs.google.com/forms/d/e/1FAIpQLSdONfE2RRU_SAgd6EwESCmDkQjoTS-zeVjSqDny75fWox9kEA/viewform?usp=publish-editor" target="_blank" rel="noopener noreferrer">Give Feedback</a>
+        <button
+          type="button"
+          className="footer-link"
+          onClick={() => setFeedbackOpen(true)}
+        >
+          Give Feedback
+        </button>
       </footer>
+      {feedbackOpen && <FeedbackModal onClose={() => setFeedbackOpen(false)} />}
     </>
+  );
+}
+
+function FeedbackModal({ onClose }) {
+  const [helpful, setHelpful] = useState(null);
+  const [comment, setComment] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [onClose]);
+
+  const handleSubmit = async () => {
+    setSubmitting(true);
+    try {
+      await fetch("https://formspree.io/f/xjglprrn", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({ helpful, comment }),
+      });
+    } catch {
+      // swallow — still show thanks so user isn't blocked
+    }
+    setSubmitting(false);
+    setSubmitted(true);
+    setTimeout(onClose, 2000);
+  };
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div
+        className="modal-card"
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Feedback"
+      >
+        <button
+          type="button"
+          className="modal-close"
+          onClick={onClose}
+          aria-label="Close"
+        >
+          ×
+        </button>
+        {submitted ? (
+          <p className="modal-thanks">Thanks for your feedback!</p>
+        ) : (
+          <>
+            <h3 className="modal-title">Was this helpful?</h3>
+            <div className="modal-rating">
+              <button
+                type="button"
+                className={`rating-btn${helpful === true ? " selected" : ""}`}
+                onClick={() => setHelpful(true)}
+                aria-label="Thumbs up"
+              >
+                👍
+              </button>
+              <button
+                type="button"
+                className={`rating-btn${helpful === false ? " selected" : ""}`}
+                onClick={() => setHelpful(false)}
+                aria-label="Thumbs down"
+              >
+                👎
+              </button>
+            </div>
+            <textarea
+              className="modal-textarea"
+              placeholder="What could be better? (optional)"
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+            />
+            <button
+              type="button"
+              className="modal-submit"
+              onClick={handleSubmit}
+              disabled={submitting}
+            >
+              {submitting ? "Sending..." : "Submit"}
+            </button>
+          </>
+        )}
+      </div>
+    </div>
   );
 }
 

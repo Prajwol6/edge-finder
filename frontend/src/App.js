@@ -9,7 +9,10 @@ const ACCEPTED_TYPES = [
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 ];
 
-const SAMPLE_JD = `Cybersecurity Intern — Summer 2026
+const SAMPLES = {
+  cyber: {
+    label: "Cybersecurity",
+    jd: `Cybersecurity Intern — Summer 2026
 Acme Security Inc. · Remote (US)
 
 About the role
@@ -39,9 +42,8 @@ Preferred qualifications
 
 What we offer
 - Paid 12-week internship with mentorship from senior security engineers
-- Potential for a full-time offer based on performance`;
-
-const SAMPLE_RESUME = `Alex Chen
+- Potential for a full-time offer based on performance`,
+    resume: `Alex Chen
 alex.chen@university.edu · linkedin.com/in/alexchen · github.com/alexchen
 San Jose, CA
 
@@ -83,7 +85,149 @@ Member, UC Davis Cybersecurity Club (2024 – Present)
 Attended weekly meetings; participated in two introductory CTF events.
 
 Volunteer, Hour of Code at Local Middle School (2023, 2024)
-Helped students complete their first programming exercises in Scratch and Python.`;
+Helped students complete their first programming exercises in Scratch and Python.`,
+  },
+  swe: {
+    label: "Software Eng",
+    jd: `Software Engineering Intern — Summer 2026
+BrightLoop Technologies · San Francisco, CA (Hybrid)
+
+About the role
+We're hiring a software engineering intern to join our web platform team. You'll ship real features alongside senior engineers, contribute to our customer-facing dashboard, and help build internal tools that move the business forward.
+
+Responsibilities
+- Build and maintain features in our React + Node.js web application
+- Design and consume REST APIs that power dashboards and integrations
+- Write unit and integration tests for new and existing code
+- Participate in daily standups, sprint planning, and code reviews
+- Pair with senior engineers on architecture and debugging
+- Contribute to internal documentation and onboarding guides
+
+Requirements
+- Currently pursuing a degree in Computer Science or related field
+- Solid foundation in JavaScript and at least one other language
+- Hands-on experience with React (hooks, component composition)
+- Working knowledge of Node.js and REST API design
+- Comfortable with Git workflows (branches, pull requests, merge conflicts)
+- Familiarity with Agile/Scrum practices
+
+Preferred qualifications
+- Experience with TypeScript
+- Exposure to PostgreSQL or another relational database
+- Prior internship, hackathon wins, or substantial open-source contributions
+- Familiarity with CI/CD and cloud platforms (AWS, GCP)
+
+What we offer
+- Paid 12-week internship with weekly mentorship
+- Real production work, not throwaway projects
+- Potential return offer for a full-time role`,
+    resume: `Jordan Park
+jordan.park@university.edu · linkedin.com/in/jordanpark · github.com/jordanpark
+Seattle, WA
+
+Education
+University of Washington
+B.S. Computer Science · Expected June 2027 · GPA: 3.7/4.0
+Relevant coursework: Data Structures, Algorithms, Web Programming, Software Construction, Databases
+
+Skills
+Languages: Python, Java, JavaScript
+Frameworks: React, Flask
+Tools: Git, GitHub, VS Code, Linux command line
+
+Projects
+Recipe Finder Web App
+Built a React single-page app that searches recipes by ingredient via the Spoonacular API. Implemented client-side filtering and a saved-favorites list using localStorage.
+
+Personal Blog Engine
+Wrote a Python script that converts a folder of Markdown files into a static blog with tags and an RSS feed. Hosted on GitHub Pages.
+
+2D Tile Game (Java)
+Built a small dungeon-crawler in Java with custom sprites and basic A* pathfinding for enemies. Code on GitHub with 30+ commits across two months.
+
+Experience
+Teaching Assistant — Intro to Programming, UW
+January 2025 – Present
+- Hold weekly office hours for an intro CS course of 80 students
+- Grade weekly Python assignments and provide written feedback
+- Run review sessions before midterms
+
+Activities
+Member, UW Competitive Programming Club (2024 – Present)
+Solve weekly practice problems with the club; participated in one regional ICPC event.
+
+Member, UW Hackathon Team (2025)
+Built a study-group matcher app over a 36-hour hackathon; placed in top 10.`,
+  },
+  ds: {
+    label: "Data Science",
+    jd: `Data Science Intern — Summer 2026
+Northwind Analytics · Boston, MA (Remote-friendly)
+
+About the role
+Northwind's data science team builds models and dashboards that drive product and marketing decisions for our SaaS platform. As an intern, you'll work on real datasets, contribute to our analytics pipeline, and present findings to non-technical stakeholders.
+
+Responsibilities
+- Explore and clean datasets to surface patterns and anomalies
+- Build and evaluate baseline machine learning models (regression, classification)
+- Create dashboards and visualizations to communicate findings
+- Work in Jupyter notebooks for prototyping; help productionize select work
+- Write SQL queries against our data warehouse to extract relevant features
+- Present analyses to product, marketing, and engineering teams
+
+Requirements
+- Currently pursuing a degree in Statistics, Data Science, Computer Science, Math, or related field
+- Strong Python skills (pandas, NumPy)
+- Working knowledge of SQL (joins, group-by, window functions)
+- Familiarity with machine learning fundamentals (train/test split, common algorithms, evaluation metrics)
+- Comfort with data visualization (matplotlib, seaborn, or similar)
+- Experience working in Jupyter notebooks
+
+Preferred qualifications
+- Prior coursework or projects involving scikit-learn or PyTorch
+- Exposure to A/B testing or experiment design
+- Familiarity with cloud data tools (BigQuery, Snowflake, or Redshift)
+- Kaggle, research, or open-source data work to point to
+
+What we offer
+- Paid 12-week internship with mentorship from senior data scientists
+- Direct exposure to production analytics and decision-making
+- Possible return offer for full-time role`,
+    resume: `Priya Shah
+priya.shah@university.edu · linkedin.com/in/priyashah · github.com/priyashah
+Austin, TX
+
+Education
+University of Texas at Austin
+B.S. Statistics · Expected May 2027 · GPA: 3.8/4.0
+Relevant coursework: Probability, Statistical Inference, Regression Analysis, Intro to Machine Learning, Linear Algebra
+
+Skills
+Languages: Python, R (intro)
+Libraries: pandas, NumPy, matplotlib
+Tools: Jupyter, Git, Excel
+
+Projects
+Titanic Survival Prediction (Kaggle)
+Cleaned and explored the Titanic dataset using pandas; engineered features from passenger metadata and trained a logistic regression baseline. Documented findings in a Jupyter notebook with matplotlib visualizations. Submission scored in the top 40% of the public leaderboard.
+
+Course Project: Linear Regression on Housing Prices
+Built a linear regression model in Python to predict housing prices from a public dataset. Compared OLS to a basic regularized model and wrote a 10-page report with residual diagnostics.
+
+Course Project: Probability Simulator
+Wrote a Python script to simulate classic probability puzzles (Monty Hall, gambler's ruin) and visualized convergence with matplotlib.
+
+Activities
+Member, UT Statistics Society (2024 – Present)
+Attend monthly speaker events on applied statistics and data science careers.
+
+Volunteer Tutor — Local High School Math Program (2024 – Present)
+Tutor 9th and 10th graders weekly in algebra and intro statistics.
+
+Member, Women in Data Club (2025 – Present)
+Participate in monthly study groups working through Kaggle micro-courses.`,
+  },
+};
 
 export default function App() {
   const [route, setRoute] = useState(window.location.hash);
@@ -260,10 +404,12 @@ function Home() {
     setError("");
   };
 
-  const loadSample = () => {
+  const loadSample = (key) => {
+    const sample = SAMPLES[key];
+    if (!sample) return;
     setFile(null);
-    setSampleResume(SAMPLE_RESUME);
-    setJd(SAMPLE_JD);
+    setSampleResume(sample.resume);
+    setJd(sample.jd);
     setResult(null);
     setError("");
   };
@@ -322,12 +468,51 @@ function Home() {
   };
 
   return (
-    <div className="app">
-      <header>
-        <h1>Edge Finder</h1>
-        <p className="tagline">Find exactly why you're not getting interviews. Fix it.</p>
-        <p className="privacy-note">We don't store your resume or job description. Ever.</p>
+    <div className="app home">
+      <header className="hero">
+        <span className="brand">Edge Finder</span>
+        {!result && (
+          <>
+            <h1 className="hero-headline">
+              Stop guessing why you're not getting interviews.
+            </h1>
+            <p className="hero-sub">
+              Paste your resume and job description. Get specific fixes in 30 seconds.
+            </p>
+            <div className="trust-bar">
+              <span className="trust-stat">Free to use</span>
+              <span className="trust-sep" aria-hidden="true">·</span>
+              <span className="trust-stat">No signup required</span>
+              <span className="trust-sep" aria-hidden="true">·</span>
+              <span className="trust-stat">Data never stored</span>
+            </div>
+          </>
+        )}
       </header>
+
+      {!result && (
+        <>
+          <div className="section-divider" aria-hidden="true" />
+          <section className="how-it-works">
+            <h2 className="section-label">How it works</h2>
+            <ol className="steps">
+              <li className="step">
+                <span className="step-num">1</span>
+                <span className="step-text">Upload Resume</span>
+              </li>
+              <li className="step">
+                <span className="step-num">2</span>
+                <span className="step-text">Paste Job Description</span>
+              </li>
+              <li className="step">
+                <span className="step-num">3</span>
+                <span className="step-text">Get Copy-Paste Fixes</span>
+              </li>
+            </ol>
+          </section>
+          <div className="section-divider" aria-hidden="true" />
+        </>
+      )}
 
       {sessionExpired && (
         <div className="expired-banner">
@@ -398,9 +583,19 @@ function Home() {
                 </>
               )}
             </div>
-            <button type="button" className="sample-btn" onClick={loadSample}>
-              Try with sample data
-            </button>
+            <div className="sample-btn-row">
+              <span className="sample-btn-label">Try sample:</span>
+              {Object.entries(SAMPLES).map(([key, { label }]) => (
+                <button
+                  key={key}
+                  type="button"
+                  className="sample-btn"
+                  onClick={() => loadSample(key)}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="field">

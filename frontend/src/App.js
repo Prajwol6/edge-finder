@@ -107,6 +107,8 @@ function PageWithFooter({ children }) {
         <a href="#/terms">Terms</a>
         <span className="footer-sep">·</span>
         <a href="#/privacy">Privacy</a>
+        <span className="footer-sep">·</span>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSdONfE2RRU_SAgd6EwESCmDkQjoTS-zeVjSqDny75fWox9kEA/viewform?usp=publish-editor" target="_blank" rel="noopener noreferrer">Give Feedback</a>
       </footer>
     </>
   );

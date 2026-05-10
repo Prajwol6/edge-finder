@@ -73,6 +73,20 @@ router.post("/", upload.single("resume"), async (req, res) => {
       });
     }
 
+    const promptInjectionPhrases = [
+      "ignore previous instructions",
+      "prompt override",
+      "new instruction",
+      "repeat after me",
+      "you are now",
+      "bypass",
+    ];
+    if (promptInjectionPhrases.some((phrase) => lowerJd.includes(phrase))) {
+      return res.status(400).json({
+        error: "Invalid job description. Please paste an actual job posting.",
+      });
+    }
+
     const jdClean = jobDescription.slice(0, 5000);
 
     const resumeText = hasFile

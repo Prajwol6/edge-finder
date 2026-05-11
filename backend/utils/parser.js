@@ -1,21 +1,24 @@
 const mammoth = require("mammoth");
+const PDF_SERVICE_URL = process.env.PDF_SERVICE_URL || "http://localhost:5001";
 async function parseResume(file) {
-  const { mimetype, buffer } = file;
+  const { mimetype, buffer, originalname } = file;
   if (mimetype === "application/pdf") {
-    const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
-    const doc = await pdfjs.getDocument({
-      data: new Uint8Array(buffer),
-      isEvalSupported: false,
-      useSystemFonts: true,
-    }).promise;
-    const pages = [];
-    for (let i = 1; i <= doc.numPages; i++) {
-      const page = await doc.getPage(i);
-      const content = await page.getTextContent();
-      pages.push(content.items.map((item) => item.str).join(" "));
+    const form = new FormData();
+    form.append(
+      "file",
+      new Blob([buffer], { type: "application/pdf" }),
+      originalname || "upload.pdf"
+    );
+    const res = await fetch(`${PDF_SERVICE_URL}/parse`, {
+      method: "POST",
+      body: form,
+    });
+    if (!res.ok) {
+      const err = await res.text();
+      throw new Error(`PDF service error: ${err}`);
     }
-    await doc.destroy();
-    return pages.join("\n");
+    const { text } = await res.json();
+    return text;
   }
   if (
     mimetype ===

@@ -11,13 +11,7 @@ You will receive:
 - The resume text inside <resume></resume> tags
 - The job description inside <jd></jd> tags
 
-Your ONLY job is:
-Step 1: List every skill, experience, and qualification explicitly mentioned in <resume> as bullet points.
-Step 2: List every requirement and qualification explicitly mentioned in <jd> as bullet points.
-Step 3: Compare both lists and identify what is genuinely missing vs what is present but poorly worded.
-Step 4: Only then produce the gap_summary, missing_signals, and fixes.
-
-For fixes — only flag something as MISSING if it does not appear anywhere in Step 1. If it appears in Step 1 but is poorly worded, rewrite it. Never skip Step 1 and Step 2.
+Your ONLY job is to produce the JSON output below. Before outputting, internally reason through: what skills are in the resume, what the JD requires, and what is genuinely missing vs poorly worded. Do NOT output this reasoning. Never write Step 1, Step 2, or any intermediate analysis. Output only the final JSON and nothing else.
 
 HARD RULES:
 - Every rewrite must use words, skills, or experiences that exist in <resume></resume>

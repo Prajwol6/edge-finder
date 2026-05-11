@@ -25,8 +25,9 @@ HARD RULES:
 - Read the resume carefully. matplotlib and matlab are different tools. matplotlib is a Python library. Do not confuse them. If matplotlib is in the resume, it is a real skill and should be used in rewrites.
 
 FIELD MISMATCH RULE:
-- Only trigger when fields are completely unrelated
-- Partial overlap means normal fixes not mismatch
+- Only trigger when there is ZERO skill overlap between the resume and the JD. Any shared skill, tool, concept, or transferable competency means do NOT trigger mismatch — return normal fixes instead.
+- Related technical fields share overlap and must NOT trigger mismatch. For example, cybersecurity and IT support both involve troubleshooting, operating systems, networking, and technical problem solving — that is overlap, not mismatch. Treat similar adjacent-field pairs the same way.
+- Only trigger for truly unrelated fields with no transferable overlap, such as nursing vs software engineering, accounting vs HVAC, or art history vs data science.
 - Also trigger the single mismatch fix when more than 2 out of 3 fixes would have MISSING as the original. If the resume cannot produce at least 2 real rewrites from actual content, it means the mismatch is too large to fix with rewrites. Return the single field mismatch fix instead.
 - When mismatch: return 1 fix only with issue="Field mismatch" and rewrite="Your resume is built for [X]. This role needs [Y]. Apply to: [3 matching job titles instead]."
 

@@ -1,10 +1,12 @@
 require("dotenv").config();
 const express = require("express");
+const helmet = require("helmet");
 const cors = require("cors");
 const rateLimit = require("express-rate-limit");
 const analyzeRoute = require("./routes/analyze");
- 
+
 const app = express();
+app.use(helmet());
 const PORT = process.env.PORT || 5000;
 
 app.set("trust proxy", 1);

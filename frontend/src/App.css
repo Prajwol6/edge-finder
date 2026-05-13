@@ -839,6 +839,94 @@ textarea:focus {
   color: var(--red);
 }
 
+.history-fixes {
+  list-style: disc;
+  padding-left: 18px;
+  margin: 4px 0 0;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--text);
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.history-no-fixes {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.74rem;
+  color: var(--text-dim);
+  margin: 4px 0 0;
+}
+
+.save-prompt {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.save-prompt-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  margin: 0;
+}
+
+.save-prompt-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.save-prompt-input {
+  flex: 1 1 160px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 10px;
+  border-radius: 4px;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.82rem;
+  transition: border-color 0.2s;
+}
+
+.save-prompt-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.save-prompt-btn {
+  background: var(--accent);
+  color: #000;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 4px;
+  font-family: 'Syne', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, opacity 0.2s;
+}
+
+.save-prompt-btn:hover:not(:disabled) {
+  background: var(--accent-dim);
+}
+
+.save-prompt-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.save-prompt-done {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--accent);
+  margin: 0;
+}
+
 @keyframes modal-fade {
   from { opacity: 0; }
   to { opacity: 1; }

@@ -36,18 +36,6 @@ function addHistoryEntry(entry) {
   saveHistory(history);
 }
 
-function recordFixCopied(id, fixIssue) {
-  if (!id) return;
-  const history = loadHistory();
-  const entry = history.find((e) => e.id === id);
-  if (!entry) return;
-  if (!Array.isArray(entry.fixes_copied)) entry.fixes_copied = [];
-  if (!entry.fixes_copied.includes(fixIssue)) {
-    entry.fixes_copied.push(fixIssue);
-    saveHistory(history);
-  }
-}
-
 function clearHistory() {
   try {
     localStorage.removeItem(HISTORY_KEY);
@@ -462,21 +450,29 @@ function HistoryModal({ onClose }) {
           <>
             <ul className="history-list">
               {entries.map((entry) => {
-                const copied = Array.isArray(entry.fixes_copied)
-                  ? entry.fixes_copied.length
-                  : 0;
-                const total = entry.fixes_count ?? 0;
+                const fixes = Array.isArray(entry.fixes_copied)
+                  ? entry.fixes_copied
+                  : [];
+                const heading = [entry.company, entry.role]
+                  .filter(Boolean)
+                  .join(" — ");
                 return (
                   <li className="history-item" key={entry.id}>
                     <div className="history-row">
-                      <span className="history-title">{entry.jobTitle}</span>
+                      <span className="history-title">
+                        {heading || "(untitled)"}
+                      </span>
                       <span className="history-date">{entry.date}</span>
                     </div>
-                    <div className="history-row history-meta">
-                      <span className="history-copied">
-                        {copied}/{total} fixes copied
-                      </span>
-                    </div>
+                    {fixes.length > 0 ? (
+                      <ul className="history-fixes">
+                        {fixes.map((text, i) => (
+                          <li key={i}>{text}</li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="history-no-fixes">No fixes copied</p>
+                    )}
                   </li>
                 );
               })}
@@ -504,7 +500,10 @@ function Home() {
   const [error, setError] = useState("");
   const [sessionExpired, setSessionExpired] = useState(false);
   const [dragOver, setDragOver] = useState(false);
-  const [currentHistoryId, setCurrentHistoryId] = useState(null);
+  const [copiedRewrites, setCopiedRewrites] = useState([]);
+  const [saveCompany, setSaveCompany] = useState("");
+  const [saveRole, setSaveRole] = useState("");
+  const [saved, setSaved] = useState(false);
   const timerRef = useRef(null);
   const fileInputRef = useRef(null);
 
@@ -585,19 +584,10 @@ function Home() {
 
       if (!res.ok) throw new Error(data.error);
       setResult(data);
-
-      const id = Date.now();
-      const trimmedJd = jd.trim();
-      const jobTitle = trimmedJd ? trimmedJd.slice(0, 50) : "Unknown Role";
-      addHistoryEntry({
-        id,
-        date: new Date().toLocaleString(),
-        jobTitle,
-        gap_summary: data.gap_summary,
-        fixes_count: Array.isArray(data.fixes) ? data.fixes.length : 0,
-        fixes_copied: [],
-      });
-      setCurrentHistoryId(id);
+      setCopiedRewrites([]);
+      setSaveCompany("");
+      setSaveRole("");
+      setSaved(false);
     } catch (err) {
       setError(err.message || "Something went wrong.");
     } finally {
@@ -612,8 +602,25 @@ function Home() {
     setResult(null);
     setError("");
     setSessionExpired(false);
-    setCurrentHistoryId(null);
+    setCopiedRewrites([]);
+    setSaveCompany("");
+    setSaveRole("");
+    setSaved(false);
     clearTimeout(timerRef.current);
+  };
+
+  const handleSave = () => {
+    const company = saveCompany.trim();
+    const role = saveRole.trim();
+    if (!company && !role) return;
+    addHistoryEntry({
+      id: Date.now(),
+      date: new Date().toLocaleString(),
+      company,
+      role,
+      fixes_copied: copiedRewrites,
+    });
+    setSaved(true);
   };
 
   return (
@@ -803,7 +810,9 @@ function Home() {
                       className="copy-btn"
                       onClick={() => {
                         navigator.clipboard.writeText(fix.rewrite);
-                        recordFixCopied(currentHistoryId, fix.issue);
+                        setCopiedRewrites((prev) =>
+                          prev.includes(fix.rewrite) ? prev : [...prev, fix.rewrite]
+                        );
                       }}
                     >
                       Copy
@@ -813,6 +822,38 @@ function Home() {
               </div>
             ))}
           </div>
+
+          {saved ? (
+            <p className="save-prompt-done">✓ Saved to My Analyses</p>
+          ) : (
+            <div className="save-prompt">
+              <p className="save-prompt-title">Save this analysis?</p>
+              <div className="save-prompt-row">
+                <input
+                  type="text"
+                  className="save-prompt-input"
+                  placeholder="Company name"
+                  value={saveCompany}
+                  onChange={(e) => setSaveCompany(e.target.value)}
+                />
+                <input
+                  type="text"
+                  className="save-prompt-input"
+                  placeholder="Role title"
+                  value={saveRole}
+                  onChange={(e) => setSaveRole(e.target.value)}
+                />
+                <button
+                  type="button"
+                  className="save-prompt-btn"
+                  onClick={handleSave}
+                  disabled={!saveCompany.trim() && !saveRole.trim()}
+                >
+                  Save
+                </button>
+              </div>
+            </div>
+          )}
 
           <button className="reset-btn" onClick={handleReset}>
             Analyze Another Resume

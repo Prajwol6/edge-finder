@@ -1,13 +1,18 @@
 import io
+import os
 import pdfplumber
 from flask import Flask, jsonify, request
 
 app = Flask(__name__)
 
 MAX_SIZE = 5 * 1024 * 1024  # 5MB
+INTERNAL_TOKEN = os.environ.get("PDF_SERVICE_SECRET")
 
 @app.route("/parse", methods=["POST"])
 def parse():
+    if not INTERNAL_TOKEN or request.headers.get("X-Internal-Token") != INTERNAL_TOKEN:
+        return jsonify({"error": "Unauthorized"}), 401
+
     if "file" not in request.files:
         return jsonify({"error": "No file uploaded"}), 400
     

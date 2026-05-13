@@ -22,10 +22,10 @@ app.use(
 );
 app.use(express.json());
  
-// Rate limiting — 5 requests per IP per hour
+// Rate limiting — 10 requests per IP per hour
 const limiter = rateLimit({
   windowMs: 60 * 60 * 1000,
-  max: 5,
+  max: 10,
   message: { error: "Too many requests. Try again in an hour." },
 });
 app.use("/api/", limiter);

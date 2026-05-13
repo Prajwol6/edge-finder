@@ -9,6 +9,53 @@ const ACCEPTED_TYPES = [
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 ];
 
+const HISTORY_KEY = "ef-history";
+const HISTORY_DISPLAY_LIMIT = 10;
+
+function loadHistory() {
+  try {
+    const raw = localStorage.getItem(HISTORY_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveHistory(history) {
+  try {
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+  } catch {
+    // ignore quota / serialization errors
+  }
+}
+
+function addHistoryEntry(entry) {
+  const history = loadHistory();
+  history.unshift(entry);
+  saveHistory(history);
+}
+
+function recordFixCopied(id, fixIssue) {
+  if (!id) return;
+  const history = loadHistory();
+  const entry = history.find((e) => e.id === id);
+  if (!entry) return;
+  if (!Array.isArray(entry.fixes_copied)) entry.fixes_copied = [];
+  if (!entry.fixes_copied.includes(fixIssue)) {
+    entry.fixes_copied.push(fixIssue);
+    saveHistory(history);
+  }
+}
+
+function clearHistory() {
+  try {
+    localStorage.removeItem(HISTORY_KEY);
+  } catch {
+    // ignore
+  }
+}
+
 const SAMPLES = {
   cyber: {
     label: "Cybersecurity",
@@ -245,6 +292,7 @@ export default function App() {
 
 function PageWithFooter({ children }) {
   const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
 
   return (
     <>
@@ -257,12 +305,21 @@ function PageWithFooter({ children }) {
         <button
           type="button"
           className="footer-link"
+          onClick={() => setHistoryOpen(true)}
+        >
+          My Analyses
+        </button>
+        <span className="footer-sep">·</span>
+        <button
+          type="button"
+          className="footer-link"
           onClick={() => setFeedbackOpen(true)}
         >
           Give Feedback
         </button>
       </footer>
       {feedbackOpen && <FeedbackModal onClose={() => setFeedbackOpen(false)} />}
+      {historyOpen && <HistoryModal onClose={() => setHistoryOpen(false)} />}
     </>
   );
 }
@@ -361,6 +418,83 @@ function FeedbackModal({ onClose }) {
   );
 }
 
+function HistoryModal({ onClose }) {
+  const [history, setHistory] = useState(() => loadHistory());
+
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [onClose]);
+
+  const handleClear = () => {
+    clearHistory();
+    setHistory([]);
+  };
+
+  const entries = history.slice(0, HISTORY_DISPLAY_LIMIT);
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div
+        className="modal-card history-card"
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label="My Analyses"
+      >
+        <button
+          type="button"
+          className="modal-close"
+          onClick={onClose}
+          aria-label="Close"
+        >
+          ×
+        </button>
+        <h3 className="modal-title">My Analyses</h3>
+        {entries.length === 0 ? (
+          <p className="history-empty">
+            No analyses yet. Your last 10 runs will appear here.
+          </p>
+        ) : (
+          <>
+            <ul className="history-list">
+              {entries.map((entry) => {
+                const copied = Array.isArray(entry.fixes_copied)
+                  ? entry.fixes_copied.length
+                  : 0;
+                const total = entry.fixes_count ?? 0;
+                return (
+                  <li className="history-item" key={entry.id}>
+                    <div className="history-row">
+                      <span className="history-title">{entry.jobTitle}</span>
+                      <span className="history-date">{entry.date}</span>
+                    </div>
+                    <div className="history-row history-meta">
+                      <span className="history-copied">
+                        {copied}/{total} fixes copied
+                      </span>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+            <button
+              type="button"
+              className="history-clear"
+              onClick={handleClear}
+            >
+              Clear History
+            </button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function Home() {
   const [file, setFile] = useState(null);
   const [sampleResume, setSampleResume] = useState(null);
@@ -370,6 +504,7 @@ function Home() {
   const [error, setError] = useState("");
   const [sessionExpired, setSessionExpired] = useState(false);
   const [dragOver, setDragOver] = useState(false);
+  const [currentHistoryId, setCurrentHistoryId] = useState(null);
   const timerRef = useRef(null);
   const fileInputRef = useRef(null);
 
@@ -450,6 +585,19 @@ function Home() {
 
       if (!res.ok) throw new Error(data.error);
       setResult(data);
+
+      const id = Date.now();
+      const trimmedJd = jd.trim();
+      const jobTitle = trimmedJd ? trimmedJd.slice(0, 50) : "Unknown Role";
+      addHistoryEntry({
+        id,
+        date: new Date().toLocaleString(),
+        jobTitle,
+        gap_summary: data.gap_summary,
+        fixes_count: Array.isArray(data.fixes) ? data.fixes.length : 0,
+        fixes_copied: [],
+      });
+      setCurrentHistoryId(id);
     } catch (err) {
       setError(err.message || "Something went wrong.");
     } finally {
@@ -464,6 +612,7 @@ function Home() {
     setResult(null);
     setError("");
     setSessionExpired(false);
+    setCurrentHistoryId(null);
     clearTimeout(timerRef.current);
   };
 
@@ -652,7 +801,10 @@ function Home() {
                     <p>{fix.rewrite}</p>
                     <button
                       className="copy-btn"
-                      onClick={() => navigator.clipboard.writeText(fix.rewrite)}
+                      onClick={() => {
+                        navigator.clipboard.writeText(fix.rewrite);
+                        recordFixCopied(currentHistoryId, fix.issue);
+                      }}
                     >
                       Copy
                     </button>

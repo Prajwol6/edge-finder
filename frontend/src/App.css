@@ -549,6 +549,39 @@ textarea:focus {
   font-size: 0.72rem;
 }
 
+.helpful-prompt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+  font-size: 0.88rem;
+  color: var(--text-dim);
+}
+
+.helpful-label {
+  font-family: 'Syne', sans-serif;
+}
+
+.helpful-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.helpful-btn:hover {
+  border-color: var(--accent);
+}
+
+.helpful-thanks {
+  font-family: 'Syne', sans-serif;
+  color: var(--accent);
+}
+
 .reset-btn {
   background: none;
   border: 1px solid var(--border);

@@ -505,6 +505,7 @@ function Home() {
   const [saveCompany, setSaveCompany] = useState("");
   const [saveRole, setSaveRole] = useState("");
   const [saved, setSaved] = useState(false);
+  const [helpfulSent, setHelpfulSent] = useState(false);
   const timerRef = useRef(null);
   const fileInputRef = useRef(null);
 
@@ -589,6 +590,7 @@ function Home() {
       setSaveCompany("");
       setSaveRole("");
       setSaved(false);
+      setHelpfulSent(false);
     } catch (err) {
       setError(err.message || "Something went wrong.");
     } finally {
@@ -607,7 +609,22 @@ function Home() {
     setSaveCompany("");
     setSaveRole("");
     setSaved(false);
+    setHelpfulSent(false);
     clearTimeout(timerRef.current);
+  };
+
+  const sendHelpful = (helpful) => {
+    setHelpfulSent(true);
+    fetch("https://formspree.io/f/xjglprrn", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({ helpful }),
+    }).catch(() => {
+      // swallow — user already sees "Thanks!"
+    });
   };
 
   const handleSave = () => {
@@ -859,6 +876,32 @@ function Home() {
               </div>
             </div>
           )}
+
+          <div className="helpful-prompt">
+            {helpfulSent ? (
+              <span className="helpful-thanks">Thanks!</span>
+            ) : (
+              <>
+                <span className="helpful-label">Was this helpful?</span>
+                <button
+                  type="button"
+                  className="helpful-btn"
+                  onClick={() => sendHelpful(true)}
+                  aria-label="Yes, helpful"
+                >
+                  👍
+                </button>
+                <button
+                  type="button"
+                  className="helpful-btn"
+                  onClick={() => sendHelpful(false)}
+                  aria-label="No, not helpful"
+                >
+                  👎
+                </button>
+              </>
+            )}
+          </div>
 
           <button className="reset-btn" onClick={handleReset}>
             Analyze Another Resume

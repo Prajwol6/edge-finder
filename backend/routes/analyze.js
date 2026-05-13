@@ -22,7 +22,24 @@ const upload = multer({
   },
 });
  
-router.post("/", upload.single("resume"), async (req, res) => {
+const handleUpload = (req, res, next) => {
+  upload.single("resume")(req, res, (err) => {
+    if (!err) return next();
+    if (err instanceof multer.MulterError) {
+      if (err.code === "LIMIT_FILE_SIZE") {
+        return res
+          .status(400)
+          .json({ error: "File is too large. Maximum size is 5MB." });
+      }
+      return res.status(400).json({ error: err.message });
+    }
+    return res
+      .status(400)
+      .json({ error: err.message || "File upload failed." });
+  });
+};
+
+router.post("/", handleUpload, async (req, res) => {
   try {
     const { jobDescription, resumeText: rawResumeText } = req.body;
 
@@ -172,6 +189,7 @@ router.post("/", upload.single("resume"), async (req, res) => {
     res.json(result);
   } catch (err) {
     console.error("Analyze error:", err);
+    if (res.headersSent) return;
     res.status(500).json({ error: "Analysis failed. Please try again." });
   }
 });

@@ -538,6 +538,17 @@ textarea:focus {
   background: #003316;
 }
 
+.not-applicable {
+  display: inline-block;
+  margin-top: 8px;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+}
+
 .reset-btn {
   background: none;
   border: 1px solid var(--border);

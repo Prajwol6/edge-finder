@@ -11,6 +11,7 @@ const ACCEPTED_TYPES = [
 
 const HISTORY_KEY = "ef-history";
 const HISTORY_DISPLAY_LIMIT = 10;
+const PLACEHOLDER_REWRITE = "You don't have this. Only add it if true.";
 
 function loadHistory() {
   try {
@@ -806,17 +807,21 @@ function Home() {
                   <div className="after">
                     <span className="label">After</span>
                     <p>{fix.rewrite}</p>
-                    <button
-                      className="copy-btn"
-                      onClick={() => {
-                        navigator.clipboard.writeText(fix.rewrite);
-                        setCopiedRewrites((prev) =>
-                          prev.includes(fix.rewrite) ? prev : [...prev, fix.rewrite]
-                        );
-                      }}
-                    >
-                      Copy
-                    </button>
+                    {fix.rewrite === PLACEHOLDER_REWRITE ? (
+                      <span className="not-applicable">Not applicable</span>
+                    ) : (
+                      <button
+                        className="copy-btn"
+                        onClick={() => {
+                          navigator.clipboard.writeText(fix.rewrite);
+                          setCopiedRewrites((prev) =>
+                            prev.includes(fix.rewrite) ? prev : [...prev, fix.rewrite]
+                          );
+                        }}
+                      >
+                        Copy
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
